@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Asset Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: rgba(17, 24, 39, 0.7);
+    --bg-card-hover: rgba(22, 33, 55, 0.85);
+    --border: rgba(255, 255, 255, 0.06);
+    --border-accent: rgba(99, 179, 237, 0.2);
+    --text-primary: #f0f4f8;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #63b3ed;
+    --accent-cyan: #22d3ee;
+    --accent-gold: #fbbf24;
+    --accent-emerald: #34d399;
+    --accent-rose: #fb7185;
+    --accent-violet: #a78bfa;
+    --accent-orange: #fb923c;
+    --positive: #34d399;
+    --negative: #fb7185;
+    --glow-blue: 0 0 30px rgba(99, 179, 237, 0.15);
+    --glow-gold: 0 0 30px rgba(251, 191, 36, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background effects */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(99, 179, 237, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(251, 191, 36, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(34, 211, 238, 0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .noise-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .app {
+    position: relative;
+    z-index: 2;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 32px 40px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--bg-primary);
+    box-shadow: var(--glow-blue);
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-cyan);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(34, 211, 238, 0); }
+  }
+
+  .last-updated {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Price Ticker */
+  .price-ticker {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    flex: 1;
+    transition: all 0.3s ease;
+  }
+
+  .ticker-item:hover {
+    border-color: var(--border-accent);
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--glow-blue);
+  }
+
+  .ticker-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .ticker-icon.gold {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.05));
+    border: 1px solid rgba(251, 191, 36, 0.2);
+  }
+
+  .ticker-icon.silver {
+    background: linear-gradient(135deg, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.05));
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .ticker-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .ticker-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .ticker-unit {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* Summary Cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .summary-card {
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .summary-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+  .summary-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan)); }
+  .summary-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent-gold), var(--accent-orange)); }
+  .summary-card:nth-child(4)::before { background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose)); }
+
+  .summary-card:hover {
+    border-color: var(--border-accent);
+    background: var(--bg-card-hover);
+    transform: translateY(-3px);
+  }
+
+  .summary-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .summary-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .summary-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* Main Grid */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+  }
+
+  /* Asset Table */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .card-badge {
+    font-size: 11px;
+    color: var(--accent-cyan);
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .asset-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .asset-table thead th {
+    padding: 12px 28px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.01);
+  }
+
+  .asset-table thead th:last-child,
+  .asset-table tbody td:last-child { text-align: right; }
+
+  .asset-table tbody tr {
+    transition: background 0.2s ease;
+    cursor: default;
+  }
+
+  .asset-table tbody tr:hover {
+    background: rgba(99, 179, 237, 0.03);
+  }
+
+  .asset-table tbody td {
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .asset-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .asset-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .asset-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+
+  .asset-detail {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .mono {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .positive { color: var(--positive); }
+  .negative { color: var(--negative); }
+  .neutral { color: var(--text-secondary); }
+
+  .return-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .return-badge.positive {
+    background: rgba(52, 211, 153, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.2);
+  }
+
+  .return-badge.negative {
+    background: rgba(251, 113, 133, 0.1);
+    border: 1px solid rgba(251, 113, 133, 0.2);
+  }
+
+  .return-badge.neutral {
+    background: rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  /* Sidebar */
+  .sidebar { display: flex; flex-direction: column; gap: 24px; }
+
+  /* Donut Chart */
+  .donut-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0 8px;
+  }
+
+  .donut-container {
+    position: relative;
+    width: 220px;
+    height: 220px;
+  }
+
+  .donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .donut-center-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  .donut-center-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  .legend {
+    padding: 0 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+
+  .legend-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .legend-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 4px;
+  }
+
+  .legend-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .legend-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Target Card */
+  .target-card {
+    padding: 28px;
+  }
+
+  .target-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .target-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+
+  .target-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-gold);
+  }
+
+  .progress-track {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan), var(--accent-emerald));
+    transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+    border-radius: 0 10px 10px 0;
+  }
+
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .progress-pct {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    color: var(--accent-cyan);
+  }
+
+  /* Loading */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    text-align: center;
+  }
+
+  .loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent-cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* Stagger animations */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in {
+    animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  .delay-5 { animation-delay: 0.5s; }
+  .delay-6 { animation-delay: 0.6s; }
+
+  /* Error state */
+  .data-source-info {
+    text-align: center;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .data-source-info a {
+    color: var(--accent-blue);
+    text-decoration: none;
+  }
+
+  /* Error Page */
+  .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+    padding: 40px 20px;
+    animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .error-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 28px;
+    background: rgba(251, 113, 133, 0.08);
+    border: 1px solid rgba(251, 113, 133, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    margin-bottom: 32px;
+    box-shadow: 0 0 40px rgba(251, 113, 133, 0.1);
+  }
+
+  .error-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .error-message {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  .error-detail {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent-rose);
+    background: rgba(251, 113, 133, 0.06);
+    border: 1px solid rgba(251, 113, 133, 0.12);
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 36px;
+    max-width: 500px;
+    word-break: break-word;
+  }
+
+  .error-steps {
+    text-align: left;
+    max-width: 420px;
+    margin-bottom: 36px;
+  }
+
+  .error-steps-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .error-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .error-step:last-child { border-bottom: none; }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(99, 179, 237, 0.1);
+    border: 1px solid rgba(99, 179, 237, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+  }
+
+  .step-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .step-text strong {
+    color: var(--text-primary);
+  }
+
+  .retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+    border: none;
+    border-radius: 12px;
+    color: var(--bg-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--glow-blue);
+  }
+
+  .retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 40px rgba(99, 179, 237, 0.3);
+  }
+
+  .retry-btn:active {
+    transform: translateY(0);
+  }
+
+  .open-sheet-link {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .open-sheet-link:hover {
+    color: var(--accent-cyan);
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 680px) {
+    .app { padding: 20px 16px; }
+    .summary-grid { grid-template-columns: 1fr; }
+    .price-ticker { flex-direction: column; }
+    .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .summary-value { font-size: 22px; }
+    .asset-table { font-size: 13px; }
+    .asset-table thead th,
+    .asset-table tbody td { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="noise-overlay"></div>
+<div class="app" id="app">
+  <div class="loading-state" id="loadingState">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Fetching portfolio data from Google Sheets…</div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// CONFIGURATION
+// ============================================
+const SHEET_ID = '1q3nqutHuD_xOunmcutg0berJIGc0-wZuD8jFBpyq0kM';
+const GID = '1659295332';
+
+// ============================================
+// FETCH DATA (using Google Visualization API with JSONP — bypasses CORS)
+// ============================================
+function fetchData() {
+  return new Promise((resolve, reject) => {
+    // Create a unique callback name
+    const callbackName = 'gsheetCallback_' + Date.now();
+    const timeout = setTimeout(() => {
+      delete window[callbackName];
+      reject(new Error('Request timed out after 15 seconds. Check your internet connection.'));
+    }, 15000);
+
+    // Google Visualization API callback
+    window[callbackName] = function(response) {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      try {
+        if (response.status === 'error') {
+          reject(new Error('Google API error: ' + (response.errors?.[0]?.detailed_message || 'Unknown error')));
+          return;
+        }
+        const table = response.table;
+        const rows = [];
+        for (const row of table.rows) {
+          const cells = row.c.map(cell => {
+            if (!cell || cell.v === null || cell.v === undefined) return '';
+            return String(cell.v);
+          });
+          rows.push(cells.join(','));
+        }
+        const csvText = rows.join('\n');
+        resolve(parseCSV(csvText));
+      } catch (e) {
+        reject(new Error('Failed to parse sheet data: ' + e.message));
+      }
+    };
+
+    // Inject script tag (JSONP — no CORS issues, works from file:// too)
+    const script = document.createElement('script');
+    script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:${callbackName}&gid=${GID}`;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      reject(new Error('Failed to load Google Sheets script. The sheet may not be shared publicly.'));
+    };
+    document.body.appendChild(script);
+  });
+}
+function parseCSV(csvText) {
+  console.log('📊 Raw CSV (first 500 chars):', csvText.substring(0, 500));
+  const lines = csvText.split('\n').map(l => l.replace(/\r/g, '').split(',').map(c => c.replace(/"/g, '').trim()));
+  console.log('📊 Total rows:', lines.length);
+  const data = {
+    goldPrice: 0,
+    silverPrice: 0,
+    assets: [],
+    grandTotal: 0,
+    currentValue: 0,
+    invested: 0,
+    netWorth: 0,
+    targetNetWorth: 10000000
+  };
+
+  for (const cols of lines) {
+    if (cols[0] === 'gold-price') data.goldPrice = parseNum(cols[1]);
+    if (cols[0] === 'silver-price') data.silverPrice = parseNum(cols[1]);
+  }
+
+  const assetNames = ['GOLD', 'SILVER', 'GROW-MUTUAL FUNDS', 'COIN-LEQUID-FUND', 'CANARA SAVING ACNT', 'SAVING ACCOUNT(mom)', 'EPF', 'Bike', 'land'];
+
+  for (const cols of lines) {
+    const name = cols[1];
+    if (assetNames.includes(name)) {
+      data.assets.push({
+        name,
+        invested: parseNum(cols[2]),
+        weight: cols[3] || '',
+        currentValue: parseNum(cols[5]),
+        returnAmt: parseNum(cols[6]),
+        returnPct: cols[7] || '',
+        startDate: cols[9] || '',
+        duration: cols[11] || '',
+        months: parseNum(cols[12]),
+        avgInvest: parseNum(cols[13])
+      });
+    }
+    if (name === 'GRAND TOTAL') {
+      data.grandTotal = parseNum(cols[2]);
+      data.currentValue = parseNum(cols[5]);
+    }
+    if (name === 'Invest') data.invested = parseNum(cols[2]);
+    if (name === 'Net-Worth') data.netWorth = parseNum(cols[5]) || parseNum(cols[2]);
+  }
+
+  // Calculate net worth if not found
+  if (!data.netWorth) data.netWorth = data.currentValue || data.grandTotal;
+  if (!data.currentValue) data.currentValue = data.assets.reduce((s, a) => s + a.currentValue, 0);
+
+  return data;
+}
+
+function parseNum(s) {
+  if (!s) return 0;
+  const n = parseFloat(String(s).replace(/,/g, '').replace(/#ERROR!/g, '0'));
+  return isNaN(n) ? 0 : n;
+}
+
+// ============================================
+// PARSE CSV DATA
+// ============================================
+
+// ============================================
+// RENDER
+// ============================================
+function fmt(n) {
+  if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2) + ' Cr';
+  if (n >= 100000) return '₹' + (n / 100000).toFixed(2) + ' L';
+  return '₹' + n.toLocaleString('en-IN');
+}
+
+function fmtFull(n) {
+  return '₹' + n.toLocaleString('en-IN');
+}
+
+const assetMeta = {
+  'GOLD': { icon: '🥇', color: 'var(--accent-gold)', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)' },
+  'SILVER': { icon: '🥈', color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: 'rgba(148,163,184,0.2)' },
+  'GROW-MUTUAL FUNDS': { icon: '📈', color: 'var(--accent-emerald)', bg: 'rgba(52,211,153,0.1)', border: 'rgba(52,211,153,0.2)' },
+  'COIN-LEQUID-FUND': { icon: '💧', color: 'var(--accent-blue)', bg: 'rgba(99,179,237,0.1)', border: 'rgba(99,179,237,0.2)' },
+  'CANARA SAVING ACNT': { icon: '🏦', color: 'var(--accent-violet)', bg: 'rgba(167,139,250,0.1)', border: 'rgba(167,139,250,0.2)' },
+  'SAVING ACCOUNT(mom)': { icon: '💜', color: 'var(--accent-rose)', bg: 'rgba(251,113,133,0.1)', border: 'rgba(251,113,133,0.2)' },
+  'EPF': { icon: '🛡️', color: 'var(--accent-cyan)', bg: 'rgba(34,211,238,0.1)', border: 'rgba(34,211,238,0.2)' },
+  'Bike': { icon: '🏍️', color: 'var(--accent-orange)', bg: 'rgba(251,146,60,0.1)', border: 'rgba(251,146,60,0.2)' },
+  'land': { icon: '🏡', color: 'var(--accent-gold)', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)' }
+};
+
+const donutColors = ['#fbbf24','#94a3b8','#34d399','#63b3ed','#a78bfa','#fb7185','#22d3ee','#fb923c','#e2b030'];
+
+function buildDonut(assets, totalValue) {
+  const filtered = assets.filter(a => a.currentValue > 0);
+  let cumulative = 0;
+  const radius = 85, cx = 110, cy = 110, strokeWidth = 28;
+  const circumference = 2 * Math.PI * radius;
+  let paths = '';
+
+  filtered.forEach((a, i) => {
+    const pct = a.currentValue / totalValue;
+    const dashLen = pct * circumference;
+    const dashOff = -cumulative * circumference;
+    paths += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${donutColors[i % donutColors.length]}" stroke-width="${strokeWidth}" stroke-dasharray="${dashLen} ${circumference - dashLen}" stroke-dashoffset="${dashOff}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})" style="opacity:0;animation:donutIn 0.8s ${0.15*i}s forwards ease-out"/>`;
+    cumulative += pct;
+  });
+
+  return `<svg width="220" height="220" viewBox="0 0 220 220">
+    <style>@keyframes donutIn{from{opacity:0;stroke-dasharray:0 ${circumference}}to{opacity:1}}</style>
+    ${paths}
+  </svg>`;
+}
+
+function getReturnClass(pct) {
+  if (!pct) return 'neutral';
+  const n = parseFloat(pct);
+  if (n > 0) return 'positive';
+  if (n < 0) return 'negative';
+  return 'neutral';
+}
+
+function getReturnArrow(pct) {
+  if (!pct) return '—';
+  const n = parseFloat(pct);
+  if (n > 0) return '↑';
+  if (n < 0) return '↓';
+  return '—';
+}
+
+function render(data, source) {
+  const app = document.getElementById('app');
+  const now = new Date();
+  const timeStr = now.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const totalReturn = data.currentValue - data.invested;
+  const totalReturnPct = data.invested > 0 ? ((totalReturn / data.invested) * 100).toFixed(1) : 0;
+  const progressPct = Math.min((data.netWorth / data.targetNetWorth) * 100, 100).toFixed(1);
+
+  const investAssets = data.assets.filter(a => a.returnPct && a.returnPct !== '0 %');
+  const otherAssets = data.assets.filter(a => !a.returnPct || a.returnPct === '0 %');
+  const totalCV = data.currentValue || data.assets.reduce((s,a) => s + a.currentValue, 0);
+
+  const legendItems = data.assets.filter(a => a.currentValue > 0).map((a, i) => `
+    <div class="legend-item">
+      <div class="legend-left">
+        <div class="legend-dot" style="background:${donutColors[i % donutColors.length]}"></div>
+        <span class="legend-name">${a.name}</span>
+      </div>
+      <span class="legend-value">${fmt(a.currentValue)}</span>
+    </div>
+  `).join('');
+
+  app.innerHTML = `
+    <!-- Header -->
+    <header class="header animate-in">
+      <div class="header-left">
+        <div class="logo-mark">P</div>
+        <div>
+          <div class="page-title">Portfolio</div>
+          <div class="page-subtitle">Personal Asset Dashboard</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="live-badge"><div class="live-dot"></div>Live</div>
+        <div class="last-updated">${timeStr}</div>
+      </div>
+    </header>
+
+    <!-- Price Ticker -->
+    <div class="price-ticker animate-in delay-1">
+      <div class="ticker-item">
+        <div class="ticker-icon gold">🥇</div>
+        <div>
+          <div class="ticker-label">Gold Price</div>
+          <div class="ticker-value">${fmtFull(data.goldPrice)}</div>
+          <div class="ticker-unit">per gram</div>
+        </div>
+      </div>
+      <div class="ticker-item">
+        <div class="ticker-icon silver">🥈</div>
+        <div>
+          <div class="ticker-label">Silver Price</div>
+          <div class="ticker-value">${fmtFull(data.silverPrice)}</div>
+          <div class="ticker-unit">per gram</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid animate-in delay-2">
+      <div class="summary-card">
+        <div class="summary-label">Net Worth</div>
+        <div class="summary-value">${fmt(data.netWorth)}</div>
+        <div class="summary-sub">Total asset value</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Total Invested</div>
+        <div class="summary-value">${fmt(data.invested)}</div>
+        <div class="summary-sub">Across active investments</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Total Returns</div>
+        <div class="summary-value ${totalReturn >= 0 ? 'positive' : 'negative'}">${totalReturn >= 0 ? '+' : ''}${fmt(Math.abs(totalReturn))}</div>
+        <div class="summary-sub ${totalReturn >= 0 ? 'positive' : 'negative'}">${totalReturn >= 0 ? '↑' : '↓'} ${totalReturnPct}% overall</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Grand Total</div>
+        <div class="summary-value">${fmt(data.grandTotal)}</div>
+        <div class="summary-sub">All assets combined</div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <!-- Left: Asset Table -->
+      <div>
+        <!-- Active Investments -->
+        <div class="card animate-in delay-3" style="margin-bottom:24px">
+          <div class="card-header">
+            <div class="card-title">Active Investments</div>
+            <div class="card-badge">${investAssets.length} Assets</div>
+          </div>
+          <table class="asset-table">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Invested</th>
+                <th>Current Value</th>
+                <th>Returns</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${investAssets.map(a => {
+                const m = assetMeta[a.name] || { icon: '📊', color: '#63b3ed', bg: 'rgba(99,179,237,0.1)', border: 'rgba(99,179,237,0.2)' };
+                const rc = getReturnClass(a.returnPct);
+                return `<tr>
+                  <td>
+                    <div class="asset-name-cell">
+                      <div class="asset-icon" style="background:${m.bg};border:1px solid ${m.border}">${m.icon}</div>
+                      <div>
+                        <div class="asset-name">${a.name}</div>
+                        <div class="asset-detail">${a.startDate ? 'Since ' + a.startDate : ''}${a.weight ? ' · ' + a.weight + (a.name === 'GOLD' ? 'g' : a.name === 'SILVER' ? 'g' : '') : ''}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="mono">${fmtFull(a.invested)}</td>
+                  <td class="mono">${fmtFull(a.currentValue)}</td>
+                  <td>
+                    <div class="return-badge ${rc}">
+                      ${getReturnArrow(a.returnPct)} ${a.returnPct || '—'}
+                    </div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:4px;font-family:'Space Mono',monospace">
+                      ${a.returnAmt !== 0 ? (a.returnAmt > 0 ? '+' : '') + fmtFull(a.returnAmt) : ''}
+                    </div>
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Other Assets -->
+        <div class="card animate-in delay-4">
+          <div class="card-header">
+            <div class="card-title">Other Assets</div>
+            <div class="card-badge">${otherAssets.length} Assets</div>
+          </div>
+          <table class="asset-table">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Invested</th>
+                <th>Current Value</th>
+                <th>Returns</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${otherAssets.map(a => {
+                const m = assetMeta[a.name] || { icon: '📊', color: '#63b3ed', bg: 'rgba(99,179,237,0.1)', border: 'rgba(99,179,237,0.2)' };
+                return `<tr>
+                  <td>
+                    <div class="asset-name-cell">
+                      <div class="asset-icon" style="background:${m.bg};border:1px solid ${m.border}">${m.icon}</div>
+                      <div>
+                        <div class="asset-name">${a.name}</div>
+                        <div class="asset-detail">${a.name === 'land' ? 'Real Estate' : a.name.includes('SAVING') ? 'Savings' : a.name === 'EPF' ? 'Provident Fund' : a.name === 'Bike' ? 'Vehicle' : ''}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="mono">${fmtFull(a.invested)}</td>
+                  <td class="mono">${fmtFull(a.currentValue)}</td>
+                  <td><span class="return-badge neutral">— Fixed</span></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Allocation Chart -->
+        <div class="card animate-in delay-4">
+          <div class="card-header">
+            <div class="card-title">Allocation</div>
+          </div>
+          <div class="donut-wrapper">
+            <div class="donut-container">
+              ${buildDonut(data.assets, totalCV)}
+              <div class="donut-center">
+                <div class="donut-center-label">Total</div>
+                <div class="donut-center-value">${fmt(totalCV)}</div>
+              </div>
+            </div>
+          </div>
+          <div class="legend">${legendItems}</div>
+        </div>
+
+        <!-- Target -->
+        <div class="card target-card animate-in delay-5">
+          <div class="target-header">
+            <div class="card-title">Target Net Worth</div>
+            <div class="target-value">₹1 Cr</div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width:${progressPct}%"></div>
+          </div>
+          <div class="progress-text">
+            <span>${fmt(data.netWorth)} reached</span>
+            <span class="progress-pct">${progressPct}%</span>
+          </div>
+        </div>
+
+        <!-- Investment Stats -->
+        <div class="card animate-in delay-6" style="padding:24px 28px">
+          <div class="card-title" style="margin-bottom:20px">Investment Stats</div>
+          ${investAssets.map(a => {
+            const m = assetMeta[a.name] || { color: '#63b3ed' };
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:13px;color:var(--text-secondary)">${a.name}</span>
+              <div style="text-align:right">
+                <div style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--text-primary)">${fmtFull(Math.round(a.avgInvest))}/mo</div>
+                <div style="font-size:11px;color:var(--text-muted)">${a.months} months</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="data-source-info animate-in delay-6">
+      🟢 Live data from Google Sheets · 
+      <a href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=${GID}#gid=${GID}" target="_blank">Open Sheet ↗</a>
+    </div>
+  `;
+}
+
+function renderError(errorMsg) {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <div class="error-title">Cannot Fetch Portfolio Data</div>
+      <div class="error-message">
+        The dashboard couldn't retrieve data from your Google Sheet. Make sure the sheet is accessible and you have a network connection.
+      </div>
+      <div class="error-detail">${errorMsg}</div>
+      <div class="error-steps">
+        <div class="error-steps-title">How to fix this</div>
+        <div class="error-step">
+          <div class="step-num">1</div>
+          <div class="step-text">Open your Google Sheet → click <strong>Share</strong> → set General access to <strong>"Anyone with the link"</strong></div>
+        </div>
+        <div class="error-step">
+          <div class="step-num">2</div>
+          <div class="step-text">If opening from a <strong>local file (file://)</strong>, host it on a server instead:<br><code style="font-size:12px;color:var(--accent-cyan);margin-top:6px;display:inline-block">python3 -m http.server 8080</code></div>
+        </div>
+        <div class="error-step">
+          <div class="step-num">3</div>
+          <div class="step-text">Come back and hit <strong>Retry</strong></div>
+        </div>
+      </div>
+      <button class="retry-btn" onclick="location.reload()">↻ Retry Connection</button>
+      <br>
+      <a class="open-sheet-link" href="https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?gid=${GID}#gid=${GID}" target="_blank">Open Google Sheet ↗</a>
+    </div>
+  `;
+}
+
+// ============================================
+// INIT
+// ============================================
+(async () => {
+  try {
+    const data = await fetchData();
+    render(data, 'live');
+  } catch (e) {
+    console.error('Failed to fetch sheet data:', e);
+    renderError(e.message);
+  }
+})();
+</script>
+</body>
+</html>
