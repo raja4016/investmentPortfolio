@@ -959,7 +959,27 @@ const assetMeta = {
   'land': { icon: '🏡', color: 'var(--accent-gold)', bg: 'rgba(251,191,36,0.1)', border: 'rgba(251,191,36,0.2)' }
 };
 
-const donutColors = ['#fbbf24','#94a3b8','#34d399','#63b3ed','#a78bfa','#fb7185','#22d3ee','#fb923c','#e2b030'];
+// Color palette pool — wide variety, no two look similar
+const colorPool = [
+  '#fbbf24','#34d399','#63b3ed','#a78bfa','#fb7185','#22d3ee','#fb923c',
+  '#f472b6','#4ade80','#60a5fa','#c084fc','#f87171','#2dd4bf','#facc15',
+  '#e879f9','#38bdf8','#a3e635','#ff6b6b','#4ecdc4','#ffe66d','#a855f7',
+  '#06b6d4','#f59e0b','#ec4899','#10b981','#6366f1','#ef4444','#14b8a6',
+  '#8b5cf6','#f97316','#0ea5e9','#84cc16','#d946ef','#eab308','#3b82f6'
+];
+
+// Shuffle and pick unique colors on every load
+function getShuffledColors(count) {
+  const pool = [...colorPool];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count);
+}
+
+// Generate fresh colors for this session
+const donutColors = getShuffledColors(12);
 
 function buildDonut(assets, totalValue) {
   const filtered = assets.filter(a => a.currentValue > 0);
