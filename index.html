@@ -232,7 +232,7 @@
   /* Summary Cards */
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     margin-bottom: 32px;
   }
@@ -261,7 +261,8 @@
   .summary-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
   .summary-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan)); }
   .summary-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent-gold), var(--accent-orange)); }
-  .summary-card:nth-child(4)::before { background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose)); }
+  .summary-card:nth-child(4)::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-gold)); }
+  .summary-card:nth-child(5)::before { background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose)); }
 
   .summary-card:hover {
     border-color: var(--border-accent);
@@ -792,7 +793,7 @@
   /* Responsive */
   @media (max-width: 1100px) {
     .main-grid { grid-template-columns: 1fr; }
-    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
   }
 
   @media (max-width: 680px) {
@@ -1034,6 +1035,19 @@ function render(data, source) {
   const otherAssets = data.assets.filter(a => !a.returnPct || a.returnPct === '0 %');
   const totalCV = data.currentValue || data.assets.reduce((s,a) => s + a.currentValue, 0);
 
+  // Active investment returns (from sheet's RETRUNS-AMOUNT column)
+  const activeReturns = investAssets.reduce((s, a) => s + a.returnAmt, 0);
+  const activeInvested = investAssets.reduce((s, a) => s + a.invested, 0);
+  const activeReturnPct = activeInvested > 0 ? ((activeReturns / activeInvested) * 100).toFixed(1) : 0;
+
+  // Total investment = active invested + other assets invested
+  const otherInvested = otherAssets.reduce((s, a) => s + a.invested, 0);
+  const totalInvestment = activeInvested + otherInvested;
+
+  // Overall returns = total current value - total investment
+  const overallReturns = totalCV - totalInvestment;
+  const overallReturnPct = totalInvestment > 0 ? ((overallReturns / totalInvestment) * 100).toFixed(1) : 0;
+
   const legendItems = data.assets.filter(a => a.currentValue > 0).map((a, i) => {
     const pct = ((a.currentValue / totalCV) * 100).toFixed(1);
     return `
@@ -1090,17 +1104,22 @@ function render(data, source) {
       <div class="summary-card">
         <div class="summary-label">Net Worth</div>
         <div class="summary-value">${fmt(data.netWorth)}</div>
-        <div class="summary-sub">Total asset value</div>
+        <div class="summary-sub">Total current value</div>
       </div>
       <div class="summary-card">
-        <div class="summary-label">Total Invested</div>
-        <div class="summary-value">${fmt(data.invested)}</div>
-        <div class="summary-sub">Across active investments</div>
+        <div class="summary-label">Total Investment</div>
+        <div class="summary-value">${fmt(totalInvestment)}</div>
+        <div class="summary-sub">Active (${fmt(activeInvested)}) + Other (${fmt(otherInvested)})</div>
       </div>
       <div class="summary-card">
-        <div class="summary-label">Total Returns</div>
-        <div class="summary-value ${totalReturn >= 0 ? 'positive' : 'negative'}">${totalReturn >= 0 ? '+' : ''}${fmt(Math.abs(totalReturn))}</div>
-        <div class="summary-sub ${totalReturn >= 0 ? 'positive' : 'negative'}">${totalReturn >= 0 ? '↑' : '↓'} ${totalReturnPct}% overall</div>
+        <div class="summary-label">Active Returns</div>
+        <div class="summary-value ${activeReturns >= 0 ? 'positive' : 'negative'}">${activeReturns >= 0 ? '+' : ''}${fmt(Math.abs(activeReturns))}</div>
+        <div class="summary-sub ${activeReturns >= 0 ? 'positive' : 'negative'}">${activeReturns >= 0 ? '↑' : '↓'} ${activeReturnPct}% on active investments</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Overall Returns</div>
+        <div class="summary-value ${overallReturns >= 0 ? 'positive' : 'negative'}">${overallReturns >= 0 ? '+' : ''}${fmt(Math.abs(overallReturns))}</div>
+        <div class="summary-sub ${overallReturns >= 0 ? 'positive' : 'negative'}">${overallReturns >= 0 ? '↑' : '↓'} ${overallReturnPct}% on all assets</div>
       </div>
       <div class="summary-card">
         <div class="summary-label">Grand Total</div>
