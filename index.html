@@ -159,80 +159,47 @@
     font-family: 'Space Mono', monospace;
   }
 
-  /* Price Ticker */
-  .price-ticker {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .ticker-item {
+  /* Price Chips (compact, next to Live badge) */
+  .price-chip {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px 24px;
+    gap: 8px;
+    padding: 6px 14px;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 20px;
     backdrop-filter: blur(12px);
-    flex: 1;
     transition: all 0.3s ease;
   }
 
-  .ticker-item:hover {
+  .price-chip:hover {
     border-color: var(--border-accent);
     background: var(--bg-card-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--glow-blue);
   }
 
-  .ticker-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
+  .price-chip-icon {
+    font-size: 14px;
   }
 
-  .ticker-icon.gold {
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.05));
-    border: 1px solid rgba(251, 191, 36, 0.2);
-  }
-
-  .ticker-icon.silver {
-    background: linear-gradient(135deg, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.05));
-    border: 1px solid rgba(148, 163, 184, 0.2);
-  }
-
-  .ticker-label {
-    font-size: 12px;
+  .price-chip-label {
+    font-size: 11px;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
     font-weight: 600;
-    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
-  .ticker-value {
+  .price-chip-value {
     font-family: 'Space Mono', monospace;
-    font-size: 22px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--text-primary);
-  }
-
-  .ticker-unit {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 2px;
   }
 
   /* Summary Cards */
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
     margin-bottom: 32px;
   }
@@ -261,8 +228,7 @@
   .summary-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
   .summary-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan)); }
   .summary-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent-gold), var(--accent-orange)); }
-  .summary-card:nth-child(4)::before { background: linear-gradient(90deg, var(--accent-emerald), var(--accent-gold)); }
-  .summary-card:nth-child(5)::before { background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose)); }
+  .summary-card:nth-child(4)::before { background: linear-gradient(90deg, var(--accent-violet), var(--accent-rose)); }
 
   .summary-card:hover {
     border-color: var(--border-accent);
@@ -644,6 +610,102 @@
     text-decoration: none;
   }
 
+  /* Projection Card */
+  .projection-section {
+    margin-top: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .projection-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .projection-title span {
+    font-size: 14px;
+  }
+
+  .scenario {
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+  }
+
+  .scenario:hover {
+    border-color: var(--border-accent);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .scenario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .scenario-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .scenario-label.conservative { color: var(--accent-blue); }
+  .scenario-label.moderate { color: var(--accent-emerald); }
+  .scenario-label.optimistic { color: var(--accent-gold); }
+
+  .scenario-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .scenario-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .scenario-bar {
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .scenario-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .scenario-bar-fill.conservative { background: var(--accent-blue); }
+  .scenario-bar-fill.moderate { background: var(--accent-emerald); }
+  .scenario-bar-fill.optimistic { background: var(--accent-gold); }
+
+  .projection-note {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 14px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
   /* Error Page */
   .error-state {
     display: flex;
@@ -793,13 +855,13 @@
   /* Responsive */
   @media (max-width: 1100px) {
     .main-grid { grid-template-columns: 1fr; }
-    .summary-grid { grid-template-columns: repeat(3, 1fr); }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (max-width: 680px) {
     .app { padding: 20px 16px; }
     .summary-grid { grid-template-columns: 1fr; }
-    .price-ticker { flex-direction: column; }
+    .header-right { flex-wrap: wrap; justify-content: flex-end; }
     .header { flex-direction: column; align-items: flex-start; gap: 12px; }
     .summary-value { font-size: 22px; }
     .asset-table { font-size: 13px; }
@@ -846,16 +908,17 @@ function fetchData() {
           return;
         }
         const table = response.table;
-        const rows = [];
-        for (const row of table.rows) {
-          const cells = row.c.map(cell => {
+        // Convert to array of arrays, preserving exact cell values
+        const rows = table.rows.map(row =>
+          row.c.map(cell => {
             if (!cell || cell.v === null || cell.v === undefined) return '';
             return String(cell.v);
-          });
-          rows.push(cells.join(','));
-        }
-        const csvText = rows.join('\n');
-        resolve(parseCSV(csvText));
+          })
+        );
+        console.log('📊 Total rows:', rows.length);
+        console.log('📊 Sample row 0:', JSON.stringify(rows[0]));
+        console.log('📊 Sample row 4:', JSON.stringify(rows[4]));
+        resolve(parseRows(rows));
       } catch (e) {
         reject(new Error('Failed to parse sheet data: ' + e.message));
       }
@@ -872,10 +935,7 @@ function fetchData() {
     document.body.appendChild(script);
   });
 }
-function parseCSV(csvText) {
-  console.log('📊 Raw CSV (first 500 chars):', csvText.substring(0, 500));
-  const lines = csvText.split('\n').map(l => l.replace(/\r/g, '').split(',').map(c => c.replace(/"/g, '').trim()));
-  console.log('📊 Total rows:', lines.length);
+function parseRows(lines) {
   const data = {
     goldPrice: 0,
     silverPrice: 0,
@@ -888,15 +948,31 @@ function parseCSV(csvText) {
   };
 
   for (const cols of lines) {
-    if (cols[0] === 'gold-price') data.goldPrice = parseNum(cols[1]);
-    if (cols[0] === 'silver-price') data.silverPrice = parseNum(cols[1]);
+    const col0 = (cols[0] || '').trim().toLowerCase();
+    if (col0 === 'gold-price' || col0 === 'gold price') {
+      // Try multiple columns — value could be in B(1) or I(8)
+      data.goldPrice = parseNum(cols[1]) || parseNum(cols[8]) || parseNum(cols[2]);
+      console.log('📊 Gold price row:', JSON.stringify(cols), '→ parsed:', data.goldPrice);
+    }
+    if (col0 === 'silver-price' || col0 === 'silver price') {
+      data.silverPrice = parseNum(cols[1]) || parseNum(cols[8]) || parseNum(cols[2]);
+      console.log('📊 Silver price row:', JSON.stringify(cols), '→ parsed:', data.silverPrice);
+    }
+  }
+  
+  // Fallback: scan all rows for any cell containing gold/silver price values
+  if (!data.goldPrice || !data.silverPrice) {
+    console.log('📊 First 3 rows for debugging:', JSON.stringify(lines.slice(0, 3)));
   }
 
+  // Sheet columns: A=0, B=1(Asset), C=2(Amount), D=3(weight), E=4, F=5(CURRENT-VALUE),
+  // G=6(RETURNS-AMOUNT), H=7(RETURNS-%), I=8, J=9(date), K=10, L=11(duration), M=12(month), N=13(avg-invest)
   const assetNames = ['GOLD', 'SILVER', 'GROW-MUTUAL FUNDS', 'COIN-LEQUID-FUND', 'CANARA SAVING ACNT', 'SAVING ACCOUNT(mom)', 'EPF', 'Bike', 'land'];
 
   for (const cols of lines) {
-    const name = cols[1];
+    const name = (cols[1] || '').trim();
     if (assetNames.includes(name)) {
+      console.log('📊 Asset row [' + name + ']:', JSON.stringify(cols));
       data.assets.push({
         name,
         invested: parseNum(cols[2]),
@@ -904,7 +980,7 @@ function parseCSV(csvText) {
         currentValue: parseNum(cols[5]),
         returnAmt: parseNum(cols[6]),
         returnPct: cols[7] || '',
-        startDate: cols[9] || '',
+        startDate: parseDate(cols[9]),
         duration: cols[11] || '',
         months: parseNum(cols[12]),
         avgInvest: parseNum(cols[13])
@@ -922,7 +998,22 @@ function parseCSV(csvText) {
   if (!data.netWorth) data.netWorth = data.currentValue || data.grandTotal;
   if (!data.currentValue) data.currentValue = data.assets.reduce((s, a) => s + a.currentValue, 0);
 
+  // Log parsed assets for debugging
+  console.log('📊 Parsed assets:', data.assets.map(a => a.name + ': months=' + a.months + ', avgInvest=' + a.avgInvest));
+
   return data;
+}
+
+function parseDate(s) {
+  if (!s) return '';
+  // Handle gviz Date(year,month,day) format — month is 0-indexed
+  const m = String(s).match(/Date\((\d+),(\d+),(\d+)\)/);
+  if (m) {
+    const d = new Date(parseInt(m[1]), parseInt(m[2]), parseInt(m[3]));
+    return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  // Already readable text like "28-March-2025"
+  return s;
 }
 
 function parseNum(s) {
@@ -1031,8 +1122,9 @@ function render(data, source) {
   const totalReturnPct = data.invested > 0 ? ((totalReturn / data.invested) * 100).toFixed(1) : 0;
   const progressPct = Math.min((data.netWorth / data.targetNetWorth) * 100, 100).toFixed(1);
 
-  const investAssets = data.assets.filter(a => a.returnPct && a.returnPct !== '0 %');
-  const otherAssets = data.assets.filter(a => !a.returnPct || a.returnPct === '0 %');
+  const activeAssetNames = ['GOLD', 'SILVER', 'GROW-MUTUAL FUNDS', 'COIN-LEQUID-FUND'];
+  const investAssets = data.assets.filter(a => activeAssetNames.includes(a.name));
+  const otherAssets = data.assets.filter(a => !activeAssetNames.includes(a.name));
   const totalCV = data.currentValue || data.assets.reduce((s,a) => s + a.currentValue, 0);
 
   // Active investment returns (from sheet's RETRUNS-AMOUNT column)
@@ -1074,30 +1166,20 @@ function render(data, source) {
         </div>
       </div>
       <div class="header-right">
+        <div class="price-chip">
+          <span class="price-chip-icon">🥇</span>
+          <span class="price-chip-label">Gold</span>
+          <span class="price-chip-value">${fmtFull(data.goldPrice)}/g</span>
+        </div>
+        <div class="price-chip">
+          <span class="price-chip-icon">🥈</span>
+          <span class="price-chip-label">Silver</span>
+          <span class="price-chip-value">${fmtFull(data.silverPrice)}/g</span>
+        </div>
         <div class="live-badge"><div class="live-dot"></div>Live</div>
         <div class="last-updated">${timeStr}</div>
       </div>
     </header>
-
-    <!-- Price Ticker -->
-    <div class="price-ticker animate-in delay-1">
-      <div class="ticker-item">
-        <div class="ticker-icon gold">🥇</div>
-        <div>
-          <div class="ticker-label">Gold Price</div>
-          <div class="ticker-value">${fmtFull(data.goldPrice)}</div>
-          <div class="ticker-unit">per gram</div>
-        </div>
-      </div>
-      <div class="ticker-item">
-        <div class="ticker-icon silver">🥈</div>
-        <div>
-          <div class="ticker-label">Silver Price</div>
-          <div class="ticker-value">${fmtFull(data.silverPrice)}</div>
-          <div class="ticker-unit">per gram</div>
-        </div>
-      </div>
-    </div>
 
     <!-- Summary Cards -->
     <div class="summary-grid animate-in delay-2">
@@ -1120,11 +1202,6 @@ function render(data, source) {
         <div class="summary-label">Overall Returns</div>
         <div class="summary-value ${overallReturns >= 0 ? 'positive' : 'negative'}">${overallReturns >= 0 ? '+' : ''}${fmt(Math.abs(overallReturns))}</div>
         <div class="summary-sub ${overallReturns >= 0 ? 'positive' : 'negative'}">${overallReturns >= 0 ? '↑' : '↓'} ${overallReturnPct}% on all assets</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">Grand Total</div>
-        <div class="summary-value">${fmt(data.grandTotal)}</div>
-        <div class="summary-sub">All assets combined</div>
       </div>
     </div>
 
@@ -1247,6 +1324,73 @@ function render(data, source) {
             <span>${fmt(data.netWorth)} reached</span>
             <span class="progress-pct">${progressPct}%</span>
           </div>
+
+          ${(() => {
+            // Projection calculation
+            const target = 100000000; // 1 Cr in paise... no, 1Cr = 10000000
+            const targetVal = 10000000;
+            const currentNW = data.netWorth || totalCV;
+            const gap = targetVal - currentNW;
+            if (gap <= 0) return '<div class="projection-section"><div class="projection-title"><span>🎉</span> Target reached!</div></div>';
+
+            // Monthly SIP from Gold + MF (active growth assets)
+            const goldSIP = data.assets.find(a => a.name === 'GOLD')?.avgInvest || 23389;
+            const mfSIP = data.assets.find(a => a.name === 'GROW-MUTUAL FUNDS')?.avgInvest || 29424;
+            const monthlySIP = goldSIP + mfSIP;
+
+            // Project future value: FV = PV*(1+r)^n + SIP*[((1+r)^n - 1)/r]
+            function projectMonths(annualReturn) {
+              const r = annualReturn / 12;
+              for (let m = 1; m <= 240; m++) {
+                const fv = currentNW * Math.pow(1 + r, m) + monthlySIP * ((Math.pow(1 + r, m) - 1) / r);
+                if (fv >= targetVal) return m;
+              }
+              return 240;
+            }
+
+            const scenarios = [
+              { label: 'Conservative', cls: 'conservative', rate: 0.10, months: projectMonths(0.10) },
+              { label: 'Moderate', cls: 'moderate', rate: 0.13, months: projectMonths(0.13) },
+              { label: 'Optimistic', cls: 'optimistic', rate: 0.16, months: projectMonths(0.16) },
+            ];
+
+            const maxMonths = Math.max(...scenarios.map(s => s.months));
+            const now = new Date();
+
+            function getTargetDate(months) {
+              const d = new Date(now);
+              d.setMonth(d.getMonth() + months);
+              return d.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+            }
+
+            function getYears(months) {
+              const y = Math.floor(months / 12);
+              const m = months % 12;
+              if (y === 0) return m + ' months';
+              if (m === 0) return y + ' yrs';
+              return y + 'y ' + m + 'm';
+            }
+
+            return '<div class="projection-section">' +
+              '<div class="projection-title"><span>🔮</span> Projection to ₹1 Cr</div>' +
+              '<div style="font-size:11px;color:var(--text-muted);margin-bottom:14px;font-family:Space Mono,monospace">SIP: ' + fmtFull(Math.round(monthlySIP)) + '/mo (Gold + MF)</div>' +
+              scenarios.map(s => {
+                const barPct = ((maxMonths - s.months) / maxMonths * 40 + 60).toFixed(0);
+                return '<div class="scenario">' +
+                  '<div class="scenario-header">' +
+                    '<span class="scenario-label ' + s.cls + '">' + s.label + '</span>' +
+                    '<span class="scenario-year">' + getTargetDate(s.months) + '</span>' +
+                  '</div>' +
+                  '<div class="scenario-details">' +
+                    '<span>' + (s.rate * 100).toFixed(0) + '% CAGR</span>' +
+                    '<span>' + getYears(s.months) + '</span>' +
+                  '</div>' +
+                  '<div class="scenario-bar"><div class="scenario-bar-fill ' + s.cls + '" style="width:' + barPct + '%"></div></div>' +
+                '</div>';
+              }).join('') +
+              '<div class="projection-note">⚠ Simplified projection using compound growth. Actual returns vary with market conditions. Not financial advice.</div>' +
+            '</div>';
+          })()}
         </div>
 
         <!-- Investment Stats -->
