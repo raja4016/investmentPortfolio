@@ -989,15 +989,18 @@ function buildDonut(assets, totalValue) {
   let paths = '';
 
   filtered.forEach((a, i) => {
-    const pct = a.currentValue / totalValue;
-    const dashLen = pct * circumference;
+    const pct = ((a.currentValue / totalValue) * 100).toFixed(1);
+    const dashLen = (a.currentValue / totalValue) * circumference;
     const dashOff = -cumulative * circumference;
-    paths += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${donutColors[i % donutColors.length]}" stroke-width="${strokeWidth}" stroke-dasharray="${dashLen} ${circumference - dashLen}" stroke-dashoffset="${dashOff}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})" style="opacity:0;animation:donutIn 0.8s ${0.15*i}s forwards ease-out"/>`;
-    cumulative += pct;
+    paths += `<circle class="donut-seg" data-index="${i}" data-name="${a.name}" data-value="${fmt(a.currentValue)}" data-pct="${pct}%" cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="${donutColors[i % donutColors.length]}" stroke-width="${strokeWidth}" stroke-dasharray="${dashLen} ${circumference - dashLen}" stroke-dashoffset="${dashOff}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})" style="opacity:0;animation:donutIn 0.8s ${0.15*i}s forwards ease-out;cursor:pointer;transition:stroke-width 0.25s ease, filter 0.25s ease;"/>`;
+    cumulative += a.currentValue / totalValue;
   });
 
   return `<svg width="220" height="220" viewBox="0 0 220 220">
-    <style>@keyframes donutIn{from{opacity:0;stroke-dasharray:0 ${circumference}}to{opacity:1}}</style>
+    <style>
+      @keyframes donutIn{from{opacity:0;stroke-dasharray:0 ${circumference}}to{opacity:1}}
+      .donut-seg:hover{stroke-width:34;filter:brightness(1.3) drop-shadow(0 0 8px currentColor);}
+    </style>
     ${paths}
   </svg>`;
 }
@@ -1031,15 +1034,20 @@ function render(data, source) {
   const otherAssets = data.assets.filter(a => !a.returnPct || a.returnPct === '0 %');
   const totalCV = data.currentValue || data.assets.reduce((s,a) => s + a.currentValue, 0);
 
-  const legendItems = data.assets.filter(a => a.currentValue > 0).map((a, i) => `
+  const legendItems = data.assets.filter(a => a.currentValue > 0).map((a, i) => {
+    const pct = ((a.currentValue / totalCV) * 100).toFixed(1);
+    return `
     <div class="legend-item">
       <div class="legend-left">
         <div class="legend-dot" style="background:${donutColors[i % donutColors.length]}"></div>
         <span class="legend-name">${a.name}</span>
       </div>
-      <span class="legend-value">${fmt(a.currentValue)}</span>
+      <div style="text-align:right">
+        <span class="legend-value">${fmt(a.currentValue)}</span>
+        <div style="font-size:11px;color:var(--text-muted);font-family:'Space Mono',monospace;margin-top:2px">${pct}%</div>
+      </div>
     </div>
-  `).join('');
+  `}).join('');
 
   app.innerHTML = `
     <!-- Header -->
@@ -1285,6 +1293,67 @@ function renderError(errorMsg) {
   try {
     const data = await fetchData();
     render(data, 'live');
+    
+    // Setup donut hover interactivity
+    const totalCV = data.currentValue || data.assets.reduce((s, a) => s + a.currentValue, 0);
+    const segments = document.querySelectorAll('.donut-seg');
+    const centerLabel = document.querySelector('.donut-center-label');
+    const centerValue = document.querySelector('.donut-center-value');
+    const legendItems = document.querySelectorAll('.legend-item');
+
+    segments.forEach(seg => {
+      seg.addEventListener('mouseenter', () => {
+        const idx = parseInt(seg.dataset.index);
+        // Update center text
+        centerLabel.textContent = seg.dataset.name;
+        centerLabel.style.color = donutColors[idx % donutColors.length];
+        centerValue.innerHTML = `${seg.dataset.value}<div style="font-size:13px;color:${donutColors[idx % donutColors.length]};margin-top:2px;font-weight:800">${seg.dataset.pct}</div>`;
+        // Dim other segments
+        segments.forEach(s => {
+          if (s !== seg) s.style.opacity = '0.25';
+        });
+        // Highlight matching legend item
+        legendItems.forEach((li, i) => {
+          if (i === idx) {
+            li.style.background = 'rgba(255,255,255,0.06)';
+            li.style.borderRadius = '10px';
+            li.style.transform = 'scale(1.03)';
+            li.style.transition = 'all 0.25s ease';
+          } else {
+            li.style.opacity = '0.35';
+            li.style.transition = 'all 0.25s ease';
+          }
+        });
+      });
+
+      seg.addEventListener('mouseleave', () => {
+        // Reset center text
+        centerLabel.textContent = 'Total';
+        centerLabel.style.color = '';
+        centerValue.textContent = fmt(totalCV);
+        // Reset all segments
+        segments.forEach(s => s.style.opacity = '');
+        // Reset legend
+        legendItems.forEach(li => {
+          li.style.background = '';
+          li.style.transform = '';
+          li.style.opacity = '';
+        });
+      });
+    });
+
+    // Also allow legend hover to highlight donut
+    legendItems.forEach((li, idx) => {
+      li.addEventListener('mouseenter', () => {
+        const seg = document.querySelector(`.donut-seg[data-index="${idx}"]`);
+        if (seg) seg.dispatchEvent(new Event('mouseenter'));
+      });
+      li.addEventListener('mouseleave', () => {
+        const seg = document.querySelector(`.donut-seg[data-index="${idx}"]`);
+        if (seg) seg.dispatchEvent(new Event('mouseleave'));
+      });
+    });
+
   } catch (e) {
     console.error('Failed to fetch sheet data:', e);
     renderError(e.message);
