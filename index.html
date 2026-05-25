@@ -1019,14 +1019,121 @@
   }
 
   @media (max-width: 680px) {
-    .app { padding: 20px 16px; }
-    .summary-grid { grid-template-columns: 1fr; }
-    .header-right { flex-wrap: wrap; justify-content: flex-end; }
+    .app { padding: 16px 12px; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .summary-value { font-size: 20px; }
+    .summary-label { font-size: 10px; }
+    .summary-card { padding: 16px; }
+
     .header { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .summary-value { font-size: 22px; }
-    .asset-table { font-size: 13px; }
-    .asset-table thead th,
-    .asset-table tbody td { padding: 14px 16px; }
+    .header-right { flex-wrap: wrap; justify-content: flex-start; gap: 8px; }
+    .price-chip { padding: 5px 10px; }
+    .price-chip-label { font-size: 10px; }
+    .price-chip-value { font-size: 11px; }
+    .page-title { font-size: 20px; }
+
+    /* Convert tables to mobile card layout */
+    .asset-table { border-collapse: separate; border-spacing: 0; }
+    .asset-table thead { display: none; }
+    .asset-table tbody tr {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+      align-items: center;
+    }
+
+    .asset-table tbody td {
+      border: none;
+      padding: 0;
+    }
+
+    /* Asset name takes full width */
+    .asset-table tbody td:first-child {
+      flex: 0 0 100%;
+      margin-bottom: 8px;
+    }
+
+    .asset-name-cell { gap: 10px; }
+    .asset-icon { width: 34px; height: 34px; border-radius: 10px; font-size: 16px; }
+    .asset-name { font-size: 13px; }
+    .asset-detail { font-size: 10px; }
+
+    /* Invested, Current Value, Returns share the row */
+    .asset-table tbody td:nth-child(2),
+    .asset-table tbody td:nth-child(3) {
+      flex: 1;
+      text-align: left;
+    }
+
+    .asset-table tbody td:nth-child(2)::before {
+      content: 'Invested';
+      display: block;
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-bottom: 2px;
+    }
+
+    .asset-table tbody td:nth-child(3)::before {
+      content: 'Current';
+      display: block;
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-bottom: 2px;
+    }
+
+    .asset-table tbody td:last-child {
+      flex: 1;
+      text-align: left;
+    }
+
+    .asset-table tbody td:last-child::before {
+      content: 'Returns';
+      display: block;
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 600;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-bottom: 2px;
+    }
+
+    .mono { font-size: 12px; }
+    .return-badge { font-size: 11px; padding: 3px 8px; }
+
+    /* Card headers */
+    .card-header { padding: 16px 16px 12px; }
+    .card-title { font-size: 14px; }
+
+    /* Sidebar cards */
+    .donut-container { width: 180px; height: 180px; }
+    .donut-center-value { font-size: 16px; }
+    .legend { padding: 0 16px 16px; }
+    .legend-name { font-size: 12px; }
+    .legend-value { font-size: 12px; }
+
+    .target-card { padding: 20px; }
+    .scenario { padding: 10px 12px; }
+    .scenario-year { font-size: 12px; }
+
+    /* Growth chart */
+    .growth-card { padding: 16px; }
+    .growth-chart-container { height: 220px; }
+    .chart-legend { gap: 10px; flex-wrap: wrap; }
+    .chart-legend-item { font-size: 11px; }
+
+    /* Data source */
+    .data-source-info { font-size: 10px; }
   }
 </style>
 </head>
